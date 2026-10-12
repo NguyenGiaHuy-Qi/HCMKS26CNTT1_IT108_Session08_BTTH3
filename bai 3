@@ -1,0 +1,40 @@
+## Phần 1: Phân tích
+
+Pipeline (`|`) trong PowerShell giúp kết nối nhiều lệnh với nhau để xử lý dữ liệu liên tục. Kết quả của lệnh trước sẽ được chuyển sang lệnh sau mà không cần lưu ra tệp trung gian.
+
+Sơ đồ luồng dữ liệu:
+
+```text
+Đọc tệp log
+    |
+    v
+Lọc các dòng chứa TIMEOUT
+    |
+    v
+Loại bỏ các dòng NOT TIMEOUT
+    |
+    v
+Đếm số dòng còn lại
+    |
+    v
+Trả về tổng số sự cố
+```
+
+Khác với CMD hoặc Git Bash thường truyền dữ liệu dạng văn bản qua Pipeline, PowerShell truyền các đối tượng (object), giúp xử lý và truy xuất thuộc tính của dữ liệu thuận tiện hơn.
+
+## Phần 2: Triển khai
+
+Sử dụng câu lệnh PowerShell sau:
+
+```powershell
+(Get-Content ".\access.log" | Select-String "TIMEOUT" | Where-Object { $_ -notmatch "NOT TIMEOUT" }).Count
+```
+
+**Giải thích:**
+
+- `Get-Content`: Đọc nội dung tệp log.
+- `Select-String "TIMEOUT"`: Lọc các dòng có chứa từ khóa `TIMEOUT`.
+- `Where-Object { $_ -notmatch "NOT TIMEOUT" }`: Loại bỏ các dòng chứa `NOT TIMEOUT` để tránh đếm nhầm.
+- `.Count`: Đếm số dòng còn lại và trả về tổng số sự cố.
+
+**Kết luận:** Lệnh trên kết hợp các bước đọc, lọc và đếm bằng Pipeline trên một dòng duy nhất, đồng thời loại bỏ những dòng `NOT TIMEOUT` để kết quả chính xác hơn.
